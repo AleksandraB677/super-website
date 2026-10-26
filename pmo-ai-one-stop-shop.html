@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMO AI Tools: One-Stop Shop</title>
+<style>
+  /* ── Design tokens ── */
+  :root {
+    --sap-blue:        #0070F2;
+    --sap-blue-dark:   #002A86;
+    --sap-blue-deeper: #00144A;
+    --sap-blue-light:  #D1EFFF;
+    --sap-blue-tint:   #89D1FF;
+
+    --surface-page:    #EAECEE;
+    --surface-card:    #ffffff;
+    --surface-header:  #00144A;
+
+    --text-primary:    #12171C;
+    --text-secondary:  #475E75;
+    --text-muted:      #5B738B;
+    --text-invert:     #ffffff;
+
+    --border-subtle:   #A9B4BE;
+    --border-card:     #A9B4BE;
+    --shadow-card:     0 2px 8px rgba(0,20,74,0.10), 0 0 0 1px rgba(0,20,74,0.06);
+    --shadow-card-hover: 0 6px 20px rgba(0,42,134,0.18), 0 0 0 1px rgba(0,112,242,0.25);
+
+    /* Status badge colors */
+    --badge-active-bg:    #EBF5CB;
+    --badge-active-text:  #164323;
+    --badge-active-ring:  #97DD40;
+    --badge-inuse-bg:     #D1EFFF;
+    --badge-inuse-text:   #002A86;
+    --badge-inuse-ring:   #89D1FF;
+    --badge-planned-bg:   #FFF3B8;
+    --badge-planned-text: #6D1900;
+    --badge-planned-ring: #FFC933;
+    --badge-exploring-bg: #E2D8FF;
+    --badge-exploring-text: #1C0C6E;
+    --badge-exploring-ring: #B894FF;
+
+    /* Badge types */
+    --badge-ent-bg:    #D1EFFF;
+    --badge-ent-text:  #00144A;
+    --badge-ent-ring:  #1B90FF;
+    --badge-sap-bg:    #FFF3B8;
+    --badge-sap-text:  #6D1900;
+    --badge-sap-ring:  #FFC933;
+    --badge-jwd-bg:    #C2FCEE;
+    --badge-jwd-text:  #02414C;
+    --badge-jwd-ring:  #2CE0BF;
+    --badge-m365-bg:   #E2D8FF;
+    --badge-m365-text: #1C0C6E;
+    --badge-m365-ring: #B894FF;
+
+    /* Training badge */
+    --badge-training-bg:    #FFDCE8;
+    --badge-training-text:  #71014B;
+    --badge-training-ring:  #FEADC8;
+
+    /* Phase pill colors */
+    --phase-init-bg:   #FFF3B8;
+    --phase-init-text: #6D1900;
+    --phase-plan-bg:   #D1EFFF;
+    --phase-plan-text: #002A86;
+    --phase-exec-bg:   #C2FCEE;
+    --phase-exec-text: #02414C;
+    --phase-mon-bg:    #EBF5CB;
+    --phase-mon-text:  #164323;
+    --phase-close-bg:  #E2D8FF;
+    --phase-close-text:#1C0C6E;
+
+    --radius-card:   12px;
+    --radius-pill:   100px;
+    --radius-btn:    6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "72", "72full", "SAP-icons", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--surface-page);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--surface-header);
+    padding: 0 32px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  /* SAP logo — pure CSS/SVG inline */
+  .sap-logo-svg {
+    height: 24px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    padding-left: 12px;
+    margin-left: 2px;
+  }
+
+  .header-badge {
+    background: rgba(27,144,255,0.30);
+    color: #89D1FF;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid rgba(137,209,255,0.45);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(145deg, #00144A 0%, #002A86 45%, #0070F2 100%);
+    padding: 56px 32px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 20% 50%, rgba(0,112,242,0.20) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 30%, rgba(44,224,191,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #89D1FF;
+    margin-bottom: 18px;
+  }
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: #89D1FF;
+    border-radius: 2px;
+  }
+
+  .hero h1 {
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    color: #ffffff !important;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 span {
+    color: #89D1FF !important;
+  }
+
+  .hero-sap-logo {
+    height: 40px;
+    width: auto;
+    margin-bottom: 16px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.72);
+    max-width: 560px;
+    margin: 0 auto 28px;
+    line-height: 1.6;
+  }
+
+  /* ── Search ── */
+  .search-wrap {
+    position: relative;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: rgba(255,255,255,0.5);
+    pointer-events: none;
+  }
+
+  #search-input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    font-size: 15px;
+    font-family: inherit;
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+    color: #ffffff;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  #search-input::placeholder {
+    color: rgba(255,255,255,0.45);
+  }
+
+  #search-input:focus {
+    border-color: #89D1FF;
+    background: rgba(255,255,255,0.18);
+    box-shadow: 0 0 0 3px rgba(137,209,255,0.25);
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    padding: 4px;
+    border-radius: 4px;
+    display: none;
+    font-size: 18px;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .search-clear:hover { color: rgba(255,255,255,0.9); }
+  .search-clear.visible { display: flex; align-items: center; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    background: var(--surface-card);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 52px;
+    z-index: 90;
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 2px;
+    white-space: nowrap;
+  }
+
+  .filter-btn {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--sap-blue);
+    color: var(--sap-blue);
+    background: var(--sap-blue-light);
+  }
+
+  .filter-btn.active {
+    background: var(--sap-blue);
+    border-color: var(--sap-blue);
+    color: #fff;
+  }
+
+  .results-count {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .results-count strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  /* ── Main layout ── */
+  .main {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px 40px 64px;
+  }
+
+  /* ── Grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 1300px) {
+    .cards-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 1100px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 580px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .hero { padding: 40px 20px 36px; }
+    .toolbar { padding: 10px 16px; }
+    .main { padding: 20px 16px 48px; }
+  }
+
+  /* ── Card ── */
+  .tool-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-card);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  }
+
+  .tool-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+    border-color: rgba(0,112,242,0.3);
+  }
+
+  .tool-card.hidden {
+    display: none;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .card-icon-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    background: var(--sap-blue-light);
+    border: 1px solid var(--sap-blue-tint);
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin-top: 3px;
+    flex: 1;
+  }
+
+  /* Status badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 100px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .badge-active    { background: var(--badge-active-bg);    color: var(--badge-active-text);    border: 1px solid var(--badge-active-ring);    }
+  .badge-inuse     { background: var(--badge-inuse-bg);     color: var(--badge-inuse-text);     border: 1px solid var(--badge-inuse-ring);     }
+  .badge-planned   { background: var(--badge-planned-bg);   color: var(--badge-planned-text);   border: 1px solid var(--badge-planned-ring);   }
+  .badge-exploring { background: var(--badge-exploring-bg); color: var(--badge-exploring-text); border: 1px solid var(--badge-exploring-ring); }
+  .badge-ent       { background: var(--badge-ent-bg);       color: var(--badge-ent-text);       border: 1px solid var(--badge-ent-ring);       }
+  .badge-sap       { background: var(--badge-sap-bg);       color: var(--badge-sap-text);       border: 1px solid var(--badge-sap-ring);       }
+  .badge-jwd       { background: var(--badge-jwd-bg);       color: var(--badge-jwd-text);       border: 1px solid var(--badge-jwd-ring);       }
+  .badge-m365      { background: var(--badge-m365-bg);      color: var(--badge-m365-text);      border: 1px solid var(--badge-m365-ring);      }
+  .badge-training  { background: var(--badge-training-bg);  color: var(--badge-training-text);  border: 1px solid var(--badge-training-ring);  }
+
+  .badge-active    .badge-dot { background: var(--badge-active-text);    }
+  .badge-inuse     .badge-dot { background: var(--badge-inuse-text);     }
+  .badge-planned   .badge-dot { background: var(--badge-planned-text);   }
+  .badge-exploring .badge-dot { background: var(--badge-exploring-text); }
+  .badge-ent       .badge-dot { background: var(--badge-ent-text);       }
+  .badge-sap       .badge-dot { background: var(--badge-sap-text);       }
+  .badge-jwd       .badge-dot { background: var(--badge-jwd-text);       }
+  .badge-m365      .badge-dot { background: var(--badge-m365-text);      }
+  .badge-training  .badge-dot { background: var(--badge-training-text);  }
+
+  /* ── Section divider ── */
+  .section-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 4px;
+  }
+
+  .section-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+  }
+
+  .section-divider-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .section-divider-icon {
+    font-size: 15px;
+  }
+
+  .section-divider.hidden {
+    display: none;
+  }
+
+  /* Description */
+  .card-desc {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+
+  /* Best-for */
+  .card-bestfor {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .card-bestfor-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sap-blue);
+    background: var(--sap-blue-light);
+    padding: 1px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Recording timestamp */
+  .card-timestamp {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .card-timestamp-icon { font-style: normal; }
+
+  /* Use-case pills */
+  .card-usecases {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .use-pill {
+    font-size: 13px;
+    padding: 4px 13px;
+    border-radius: var(--radius-pill);
+    background: #ffffff;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .use-pill:hover {
+    background: var(--sap-blue-light);
+    color: var(--sap-blue-dark);
+    border-color: var(--sap-blue-tint);
+  }
+
+  /* Phase tags */
+  .card-phases {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+
+  .phase-tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .phase-initiating  { background: var(--phase-init-bg);  color: var(--phase-init-text);  }
+  .phase-planning    { background: var(--phase-plan-bg);   color: var(--phase-plan-text);  }
+  .phase-executing   { background: var(--phase-exec-bg);   color: var(--phase-exec-text);  }
+  .phase-monitoring  { background: var(--phase-mon-bg);    color: var(--phase-mon-text);   }
+  .phase-closing     { background: var(--phase-close-bg);  color: var(--phase-close-text); }
+
+  /* Divider */
+  .card-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 0 0 16px;
+  }
+
+  /* CTA */
+  .card-footer {
+    margin-top: auto;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--sap-blue);
+    background: var(--sap-blue-light);
+    border: 1.5px solid var(--sap-blue-tint);
+    border-radius: var(--radius-btn);
+    padding: 10px 18px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cta-btn:hover {
+    background: var(--sap-blue);
+    border-color: var(--sap-blue);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,112,242,0.25);
+  }
+
+  .cta-arrow {
+    font-size: 15px;
+    transition: transform 0.15s;
+  }
+
+  .cta-btn:hover .cta-arrow { transform: translateX(3px); }
+
+  /* ── JWD skill CTA (teal) ── */
+  .cta-btn-jwd {
+    color: #02414C;
+    background: #C2FCEE;
+    border-color: #2CE0BF;
+  }
+
+  .cta-btn-jwd:hover {
+    background: #049F9A;
+    border-color: #049F9A;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(4,159,154,0.28);
+  }
+
+  /* ── JWD hint line ── */
+  .jwd-hint {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ── Copy tooltip ── */
+  .cta-wrap {
+    position: relative;
+  }
+
+  .copy-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.92);
+    background: #00144A;
+    color: #D1EFFF;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  }
+
+  .copy-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #00144A;
+  }
+
+  .copy-tooltip.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: none;
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 64px 24px;
+  }
+
+  .empty-state.visible { display: block; }
+
+  .empty-icon { font-size: 48px; margin-bottom: 14px; }
+
+  .empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--surface-header);
+    color: rgba(255,255,255,0.6);
+    padding: 24px 32px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .site-footer a {
+    color: #89D1FF;
+  }
+
+  .site-footer a:hover { text-decoration: underline; }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .footer-divider {
+    display: inline-block;
+    width: 1px;
+    height: 12px;
+    background: rgba(255,255,255,0.2);
+    vertical-align: middle;
+  }
+
+  /* ── Highlight match ── */
+  mark {
+    background: #FFF3B8;
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+  /* ── Focus visible ── */
+  :focus-visible {
+    outline: 2px solid var(--sap-blue);
+    outline-offset: 2px;
+  }
+
+  /* ── No-results search query display ── */
+  #no-results-query { font-style: italic; color: var(--sap-blue-dark); }
+
+  /* ══════════════════════════════════════
+     JWD SKILL DETAIL PANEL
+     ══════════════════════════════════════ */
+
+  /* Overlay */
+  .panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(1, 18, 40, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  .panel-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Panel */
+  .skill-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(480px, 100vw);
+    height: 100dvh;
+    background: #ffffff;
+    z-index: 210;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 40px rgba(0, 30, 80, 0.18);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden;
+  }
+  .skill-panel.open {
+    transform: translateX(0);
+  }
+
+  /* Panel header strip */
+  .panel-header {
+    background: linear-gradient(135deg, #00144A 0%, #002A86 100%);
+    padding: 24px 24px 20px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .panel-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.85);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+  .panel-close:hover {
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+  }
+
+  .panel-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    display: block;
+    line-height: 1;
+  }
+
+  .panel-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    padding-right: 40px;
+  }
+
+  .panel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(44,224,191,0.25);
+    color: #C2FCEE;
+    border: 1px solid rgba(44,224,191,0.45);
+    border-radius: 100px;
+    padding: 3px 10px;
+  }
+
+  /* Panel scrollable body */
+  .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overscroll-behavior: contain;
+  }
+
+  /* Section label */
+  .panel-section-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sap-blue);
+    margin-bottom: 10px;
+  }
+
+  /* Description */
+  .panel-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Divider inside panel */
+  .panel-sep {
+    height: 1px;
+    background: var(--border-subtle);
+  }
+
+  /* How-to steps */
+  .panel-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .panel-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--sap-blue-light);
+    color: var(--sap-blue-dark);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    border: 1.5px solid var(--sap-blue-tint);
+  }
+
+  .step-text {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding-top: 3px;
+  }
+
+  /* Activation phrase code box */
+  .phrase-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #D1EFFF;
+    border: 1.5px solid #89D1FF;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 6px;
+  }
+
+  .phrase-text {
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #002A86;
+    flex: 1;
+  }
+
+  /* Copy phrase button in panel */
+  .panel-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #02414C;
+    background: #C2FCEE;
+    border: 1.5px solid #2CE0BF;
+    border-radius: 6px;
+    padding: 10px 18px;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+  .panel-copy-btn:hover {
+    background: #049F9A;
+    border-color: #049F9A;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(4,159,154,0.28);
+  }
+  .panel-copy-btn .btn-icon { font-size: 15px; }
+  .panel-copy-btn.copied {
+    background: #EBF5CB;
+    border-color: #97DD40;
+    color: #164323;
+  }
+
+  /* Use-case bullet list */
+  .panel-usecases {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .panel-usecases li {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .panel-usecases li::before {
+    content: "→";
+    color: var(--sap-blue);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* JWD card cursor hint */
+  .tool-card.jwd-card {
+    cursor: pointer;
+  }
+  .tool-card.jwd-card:hover {
+    border-color: rgba(4,159,154,0.40);
+  }
+
+  /* Download Skill button */
+  .cta-btn-download {
+    color: var(--sap-blue);
+    background: var(--sap-blue-light);
+    border-color: var(--sap-blue-tint);
+    margin-top: 8px;
+  }
+
+  .cta-btn-download:hover {
+    background: var(--sap-blue);
+    border-color: var(--sap-blue);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,112,242,0.25);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="site-header" role="banner">
+  <a class="header-logo" href="#" aria-label="SAP PMO AI Tools">
+    <!-- SAP logo SVG inline -->
+    <svg class="sap-logo-svg" viewBox="0 0 108 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="108" height="54" rx="5" fill="#F0AB00"/>
+      <path d="M14 38V16h10.5c4.8 0 7.5 2.5 7.5 6.5 0 4.3-3 6.7-7.8 6.7h-4.7V38H14zm5.5-13.2h4.3c1.9 0 3-.9 3-2.6 0-1.6-1-2.5-3-2.5h-4.3v5.1zM38.5 38l-1.5-4.3h-9.1L26.4 38h-5.7l9.2-22h5.2l9.2 22h-5.8zm-9-8.3h5.9l-3-8.5-2.9 8.5zM54 38.4c-3.7 0-7-.9-9.5-2.9l3.2-3.8c1.8 1.4 4 2.1 6.4 2.1 2 0 3.3-.8 3.3-2.1 0-.5-.2-.9-.6-1.2-.4-.3-1-.5-1.9-.7l-2.9-.5c-2.1-.3-3.8-1.1-4.9-2.3-1.1-1.2-1.6-2.7-1.6-4.6 0-4.3 3.4-7 8.5-7 3.3 0 6.1.9 8.2 2.5l-3 3.7c-1.5-1.2-3.3-1.8-5.3-1.8-1.8 0-2.9.7-2.9 1.9 0 .4.2.8.5 1.1.3.3.9.5 1.7.7l2.9.5c2.2.3 3.9 1.1 5.1 2.3 1.2 1.2 1.7 2.9 1.7 4.9 0 4.3-3.5 7.2-8.9 7.2z" fill="#001833"/>
+    </svg>
+    <span class="header-title">GCO GCID PMO</span>
+  </a>
+  <span class="header-badge">AIPMO</span>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero" role="region" aria-label="Page introduction">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">AI Initiative · GCID PMO</div>
+    <svg class="hero-sap-logo" viewBox="0 0 108 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SAP">
+      <rect width="108" height="54" rx="5" fill="#F0AB00"/>
+      <path d="M14 38V16h10.5c4.8 0 7.5 2.5 7.5 6.5 0 4.3-3 6.7-7.8 6.7h-4.7V38H14zm5.5-13.2h4.3c1.9 0 3-.9 3-2.6 0-1.6-1-2.5-3-2.5h-4.3v5.1zM38.5 38l-1.5-4.3h-9.1L26.4 38h-5.7l9.2-22h5.2l9.2 22h-5.8zm-9-8.3h5.9l-3-8.5-2.9 8.5zM54 38.4c-3.7 0-7-.9-9.5-2.9l3.2-3.8c1.8 1.4 4 2.1 6.4 2.1 2 0 3.3-.8 3.3-2.1 0-.5-.2-.9-.6-1.2-.4-.3-1-.5-1.9-.7l-2.9-.5c-2.1-.3-3.8-1.1-4.9-2.3-1.1-1.2-1.6-2.7-1.6-4.6 0-4.3 3.4-7 8.5-7 3.3 0 6.1.9 8.2 2.5l-3 3.7c-1.5-1.2-3.3-1.8-5.3-1.8-1.8 0-2.9.7-2.9 1.9 0 .4.2.8.5 1.1.3.3.9.5 1.7.7l2.9.5c2.2.3 3.9 1.1 5.1 2.3 1.2 1.2 1.7 2.9 1.7 4.9 0 4.3-3.5 7.2-8.9 7.2z" fill="#ffffff"/>
+    </svg>
+    <h1>PMO AI Tools: <span>One-Stop Shop</span></h1>
+    <p class="hero-subtitle">Quick guidance on which AI tool to use — clear, practical, and built for the GCID PMO team.</p>
+
+    <div class="search-wrap" role="search">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="8.5" cy="8.5" r="5.5"/>
+        <path d="M13.5 13.5l3.5 3.5" stroke-linecap="round"/>
+      </svg>
+      <input
+        type="search"
+        id="search-input"
+        placeholder="Search tools, use cases, phases…"
+        aria-label="Search AI tools"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button class="search-clear" id="search-clear" aria-label="Clear search" title="Clear">×</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── TOOLBAR ── -->
+<div class="toolbar" role="toolbar" aria-label="Filters">
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;flex:1;">
+    <div class="filter-group" role="group" aria-label="Filter by phase">
+      <span class="filter-label">Phase</span>
+      <button class="filter-btn active" data-phase="all">All</button>
+      <button class="filter-btn" data-phase="Initiating">Initiating</button>
+      <button class="filter-btn" data-phase="Planning">Planning</button>
+      <button class="filter-btn" data-phase="Executing">Executing</button>
+      <button class="filter-btn" data-phase="Monitoring">Monitoring</button>
+      <button class="filter-btn" data-phase="Closing">Closing</button>
+    </div>
+    <div class="filter-group" role="group" aria-label="Filter by topic">
+      <span class="filter-label">Topic</span>
+      <button class="filter-btn topic-btn" data-topic="Jira">Jira</button>
+    </div>
+  </div>
+  <div class="results-count" aria-live="polite" aria-atomic="true" id="results-count">
+    Showing <strong id="results-num">21</strong> tools
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main" id="main-content">
+  <div class="cards-grid" id="cards-grid" role="list">
+
+    <!-- ══════════════════════════════════════════
+         SECTION 1: AI APPS
+         ══════════════════════════════════════════ -->
+    <div class="section-divider" id="divider-ai-apps" role="separator" aria-label="Section: AI Apps">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">
+        <span class="section-divider-icon" aria-hidden="true">🖥️</span>
+        AI Apps
+      </div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <!-- CARD 1: M365 Copilot / Teams -->
+    <article class="tool-card" role="listitem"
+      data-name="M365 Copilot Teams Microsoft 365"
+      data-phases="Executing Monitoring Closing"
+      data-search="m365 copilot teams microsoft 365 meeting notes follow-up email daily summary knowledge transfer KT enterprise access productivity"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">💬</div>
+        <span class="badge badge-m365" aria-label="Type: Microsoft 365">
+          <span class="badge-dot"></span>M365
+        </span>
+      </div>
+      <h2 class="card-title">M365 Copilot / Teams</h2>
+      <p class="card-desc">Microsoft 365 Copilot embedded in Teams — generates meeting notes, drafts follow-up emails, and produces long-session KT summaries (5–10 pages) straight from your calls.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Meeting productivity, email drafting, knowledge transfer</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Meeting Notes">Meeting Notes</button>
+        <button class="use-pill" data-usecase="Follow-up Email">Follow-up Email</button>
+        <button class="use-pill" data-usecase="KT Summary">KT Summary</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://www.microsoft365.com" target="_blank" rel="noopener">
+          Open M365 <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD 2: Copilot for SAP -->
+    <article class="tool-card" role="listitem"
+      data-name="Copilot for SAP"
+      data-phases="Monitoring Closing"
+      data-search="copilot sap eppm executive summary weekly kpi risks decisions reporting sap ai"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">📋</div>
+        <span class="badge badge-sap" aria-label="Type: SAP AI">
+          <span class="badge-dot"></span>SAP AI
+        </span>
+      </div>
+      <h2 class="card-title">Copilot for SAP</h2>
+      <p class="card-desc">SAP's native AI copilot — generates a one-page weekly executive summary (KPIs, top 5 risks, decisions) directly from EPPM live project data, ready for SteerCo distribution.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Executive reporting, EPPM data summaries</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Weekly Exec Summary">Weekly Exec Summary</button>
+        <button class="use-pill" data-usecase="KPI Summary">KPI Summary</button>
+        <button class="use-pill" data-usecase="Risk Overview">Risk Overview</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://jira.tools.sap/browse/AIPMO-7" target="_blank" rel="noopener">
+          Learn more <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD 3: EKX -->
+    <article class="tool-card" role="listitem"
+      data-name="EKX"
+      data-phases="Initiating Planning"
+      data-search="ekx sap presentation deck ramp up knowledge acronyms topics technologies branded slides copilot sap ai"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🎯</div>
+        <span class="badge badge-sap" aria-label="Type: SAP AI">
+          <span class="badge-dot"></span>SAP AI
+        </span>
+      </div>
+      <h2 class="card-title">EKX</h2>
+      <p class="card-desc">SAP AI tool for rapid knowledge ramp-up and SAP-branded presentation creation — get up to speed on new topics, teams, and acronyms, then turn Copilot content into polished EKX decks.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Knowledge ramp-up, presentation creation</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Ramp Up">Ramp Up</button>
+        <button class="use-pill" data-usecase="SAP Presentation">SAP Presentation</button>
+        <button class="use-pill" data-usecase="Acronym Lookup">Acronym Lookup</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://jira.tools.sap/browse/AIPMO-7" target="_blank" rel="noopener">
+          Learn more <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD 4: Joule + Jira MCP -->
+    <article class="tool-card" role="listitem"
+      data-name="Joule + Jira MCP"
+      data-phases="Planning Executing Monitoring"
+      data-tags="Jira"
+      data-search="joule jira mcp live data timeline gantt roadmap update transcript write-back automation enterprise access project tracking"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🔗</div>
+        <span class="badge badge-ent" aria-label="Type: Enterprise Access">
+          <span class="badge-dot"></span>Enterprise Access
+        </span>
+      </div>
+      <h2 class="card-title">Joule + Jira MCP</h2>
+      <p class="card-desc">Joule connected to live Jira data via MCP — generate timeline and Gantt roadmaps on-the-fly, and write meeting transcripts back to Jira tickets automatically without any manual copy-paste.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Jira automation, live project data, roadmap generation</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Gantt / Roadmap">Gantt / Roadmap</button>
+        <button class="use-pill" data-usecase="Jira Write-back">Jira Write-back</button>
+        <button class="use-pill" data-usecase="Live Project Data">Live Project Data</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <button class="cta-btn" aria-label="Open Joule + Jira MCP details">
+          Learn more <span class="cta-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- CARD: M365 Copilot Chat -->
+    <article class="tool-card" role="listitem"
+      data-name="M365 Copilot Chat"
+      data-phases="Initiating Planning Executing Monitoring Closing"
+      data-search="m365 copilot chat general assistant writing summarisation brainstorming drafting ad-hoc microsoft 365 productivity"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">💡</div>
+        <span class="badge badge-m365" aria-label="Type: Microsoft 365">
+          <span class="badge-dot"></span>M365
+        </span>
+      </div>
+      <h2 class="card-title">M365 Copilot Chat</h2>
+      <p class="card-desc">General-purpose AI assistant for writing, summarisation, brainstorming and ad-hoc problem solving. In the PMO context it supports quick drafting and summarising where no deeper system integration is required.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Quick drafting, summarisation, ad-hoc tasks</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Drafting">Drafting</button>
+        <button class="use-pill" data-usecase="Summarisation">Summarisation</button>
+        <button class="use-pill" data-usecase="Brainstorming">Brainstorming</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://www.microsoft365.com" target="_blank" rel="noopener">
+          Open M365 <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD: M365 Copilot – Fully Licensed -->
+    <article class="tool-card" role="listitem"
+      data-name="M365 Copilot Fully Licensed"
+      data-phases="Executing Monitoring Closing"
+      data-search="m365 copilot fully licensed teams meeting notes transcript follow-up email summary documents microsoft 365 integrated"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🏢</div>
+        <span class="badge badge-m365" aria-label="Type: Microsoft 365">
+          <span class="badge-dot"></span>M365
+        </span>
+      </div>
+      <h2 class="card-title">M365 Copilot – Fully Licensed</h2>
+      <p class="card-desc">Copilot integrated across the full Microsoft 365 environment. Particularly useful for Teams meeting notes and transcripts, follow-up emails, summaries, and working with information from meetings and documents.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Teams transcripts, document summaries, integrated M365 workflows</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Meeting Transcript">Meeting Transcript</button>
+        <button class="use-pill" data-usecase="Document Summary">Document Summary</button>
+        <button class="use-pill" data-usecase="Follow-up Email">Follow-up Email</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://www.microsoft365.com" target="_blank" rel="noopener">
+          Open M365 <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD: Claude Code -->
+    <article class="tool-card" role="listitem"
+      data-name="Claude Code"
+      data-phases="Initiating Planning Executing Monitoring Closing"
+      data-search="claude code AI workspace complex problem solving content generation workflow structured content process automation anthropic"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🤖</div>
+        <span class="badge badge-ent" aria-label="Type: Enterprise Access">
+          <span class="badge-dot"></span>Enterprise Access
+        </span>
+      </div>
+      <h2 class="card-title">Claude Code</h2>
+      <p class="card-desc">Flexible AI workspace for complex problem solving, content generation and workflow support. Positioned for tasks that go beyond simple summarisation — including structured content creation and process-oriented work.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Complex content, structured outputs, process-oriented tasks</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Structured Content">Structured Content</button>
+        <button class="use-pill" data-usecase="Process Support">Process Support</button>
+        <button class="use-pill" data-usecase="Complex Drafting">Complex Drafting</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://claude.ai/code" target="_blank" rel="noopener">
+          Open Claude Code <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD: Machine Translation Portal -->
+    <article class="tool-card" role="listitem"
+      data-name="Machine Translation Portal"
+      data-phases="Executing Monitoring Closing"
+      data-search="machine translation portal SAP translate project business content approved secure third-party language"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🌐</div>
+        <span class="badge badge-sap" aria-label="Type: SAP AI">
+          <span class="badge-dot"></span>SAP AI
+        </span>
+      </div>
+      <h2 class="card-title">Machine Translation Portal</h2>
+      <p class="card-desc">SAP-approved translation tool for project and business content. Trained on SAP content and avoids sending information to third-party translation providers — safe for internal project documentation.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Secure translation of project docs, SAP-specific terminology</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Document Translation">Document Translation</button>
+        <button class="use-pill" data-usecase="SAP Terminology">SAP Terminology</button>
+        <button class="use-pill" data-usecase="Secure Translation">Secure Translation</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <button class="cta-btn" aria-label="Learn more about Machine Translation Portal">
+          Learn more <span class="cta-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════════════════
+         SECTION 2: JOULE WORK DESKTOP SKILLS
+         ══════════════════════════════════════════ -->
+    <div class="section-divider" id="divider-jwd" role="separator" aria-label="Section: Joule Work Desktop Skills">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">
+        <span class="section-divider-icon" aria-hidden="true">⚡</span>
+        Joule Work Desktop Skills
+      </div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <!-- CARD 5: SAP Minutes -->
+    <article class="tool-card" role="listitem"
+      data-name="SAP Minutes"
+      data-phases="Executing Monitoring"
+      data-tags="Jira"
+      data-search="sap minutes transcript meeting actions decisions risks updates jira links flags JWD skill joule work desktop"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">📝</div>
+        <span class="badge badge-jwd" aria-label="Type: JWD Skill">
+          <span class="badge-dot"></span>JWD Skill
+        </span>
+      </div>
+      <h2 class="card-title">SAP Minutes</h2>
+      <p class="card-desc">Converts meeting transcripts into structured SAP Minutes — actions, decisions, risks, and updates — and pre-fills Jira links automatically. Also flags risks hidden in the transcript.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Meeting minutes, risk flagging, Jira link generation</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="SAP Minutes">SAP Minutes</button>
+        <button class="use-pill" data-usecase="Risk Flagging">Risk Flagging</button>
+        <button class="use-pill" data-usecase="Jira Links">Jira Links</button>
+        <button class="use-pill" data-usecase="Actions & Decisions">Actions &amp; Decisions</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <div class="cta-wrap">
+          <button class="cta-btn cta-btn-jwd jwd-copy-btn" data-phrase="generate SAP minutes" aria-label="Copy activation phrase for SAP Minutes">
+            Open in Joule Work Desktop <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <div class="copy-tooltip" aria-hidden="true">Activation phrase copied! Paste it in Joule Work Desktop</div>
+        </div>
+        <a class="cta-btn cta-btn-download" href="https://sap.sharepoint.com/:f:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/sap-minutes-paste-markdown?d=wfd140e5cf67d49efac95391fb69aa281&csf=1&web=1&e=vlfhTD" target="_blank" rel="noopener" aria-label="Download SAP Minutes skill file">
+          ⬇ Download Skill
+        </a>
+        <p class="jwd-hint">💡 Open Joule Work Desktop and paste the phrase above</p>
+      </div>
+    </article>
+
+    <!-- CARD 6: Jira TickMatic -->
+    <article class="tool-card" role="listitem"
+      data-name="Jira TickMatic"
+      data-phases="Planning Executing"
+      data-tags="Jira"
+      data-search="jira tickmatic bulk create tickets excel sprint assign dependencies backlog update status assignee JWD skill joule work desktop"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🎫</div>
+        <span class="badge badge-jwd" aria-label="Type: JWD Skill">
+          <span class="badge-dot"></span>JWD Skill
+        </span>
+      </div>
+      <h2 class="card-title">Jira TickMatic</h2>
+      <p class="card-desc">Bulk-creates Jira tickets from structured input or Excel, converts meeting actions into tickets, sets up sprints with auto-assignment, links dependencies, and updates existing tickets in one go.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Jira ticket creation, backlog management, sprint setup</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Bulk Jira Tickets">Bulk Jira Tickets</button>
+        <button class="use-pill" data-usecase="Sprint Setup">Sprint Setup</button>
+        <button class="use-pill" data-usecase="Backlog from Plan">Backlog from Plan</button>
+        <button class="use-pill" data-usecase="Update Tickets">Update Tickets</button>
+        <button class="use-pill" data-usecase="Link Dependencies">Link Dependencies</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <div class="cta-wrap">
+          <button class="cta-btn cta-btn-jwd jwd-copy-btn" data-phrase="create Jira tickets" aria-label="Copy activation phrase for Jira TickMatic">
+            Open in Joule Work Desktop <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <div class="copy-tooltip" aria-hidden="true">Activation phrase copied! Paste it in Joule Work Desktop</div>
+        </div>
+        <a class="cta-btn cta-btn-download" href="https://sap.sharepoint.com/:t:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/Jira-TickMatic%20-%20Automatic%20ticket%20machine.md?d=w7dd1a96183114556b9f98e4af4a7ace5&csf=1&web=1&e=pNi3Cv" target="_blank" rel="noopener" aria-label="Download Jira TickMatic skill file">
+          ⬇ Download Skill
+        </a>
+        <p class="jwd-hint">💡 Open Joule Work Desktop and paste the phrase above</p>
+      </div>
+    </article>
+
+    <!-- CARD 7: Project Manager Skill -->
+    <article class="tool-card" role="listitem"
+      data-name="Project Manager Skill"
+      data-phases="Initiating Planning Executing Monitoring Closing"
+      data-search="project manager skill PM playbook risk register timeline contact matrix charter kickoff exec summary steerco closure WBS milestones RAID JWD skill joule work desktop"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🗂️</div>
+        <span class="badge badge-jwd" aria-label="Type: JWD Skill">
+          <span class="badge-dot"></span>JWD Skill
+        </span>
+      </div>
+      <h2 class="card-title">Project Manager Skill</h2>
+      <p class="card-desc">End-to-end PM support — generates playbooks, risk registers, project charters from kickoff transcripts, SteerCo updates, closure comms, WBS, and RAID log analysis across all project phases.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Project planning, charter creation, SteerCo updates, closure</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="PM Playbook">PM Playbook</button>
+        <button class="use-pill" data-usecase="Project Charter">Project Charter</button>
+        <button class="use-pill" data-usecase="SteerCo Update">SteerCo Update</button>
+        <button class="use-pill" data-usecase="WBS">WBS</button>
+        <button class="use-pill" data-usecase="RAID Log">RAID Log</button>
+        <button class="use-pill" data-usecase="Closure Comms">Closure Comms</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <div class="cta-wrap">
+          <button class="cta-btn cta-btn-jwd jwd-copy-btn" data-phrase="run project manager skill" aria-label="Copy activation phrase for Project Manager Skill">
+            Open in Joule Work Desktop <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <div class="copy-tooltip" aria-hidden="true">Activation phrase copied! Paste it in Joule Work Desktop</div>
+        </div>
+        <a class="cta-btn cta-btn-download" href="https://sap.sharepoint.com/:t:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/Project%20Manager%20Skill.md?d=wcb88368d0d094ebdbcdfddaf4d62f695&csf=1&web=1&e=6FIEEi" target="_blank" rel="noopener" aria-label="Download Project Manager Skill file">
+          ⬇ Download Skill
+        </a>
+        <p class="jwd-hint">💡 Open Joule Work Desktop and paste the phrase above</p>
+      </div>
+    </article>
+
+    <!-- CARD 8: Risk Update Generator -->
+    <article class="tool-card" role="listitem"
+      data-name="Risk Update Generator"
+      data-phases="Executing Monitoring Closing"
+      data-search="risk update generator leadership summary prioritisation owners outlook email go-live readiness JWD skill joule work desktop"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">⚠️</div>
+        <span class="badge badge-jwd" aria-label="Type: JWD Skill">
+          <span class="badge-dot"></span>JWD Skill
+        </span>
+      </div>
+      <h2 class="card-title">Risk Update Generator</h2>
+      <p class="card-desc">Produces leadership-ready risk summaries with prioritisation and owners, formatted as Outlook-ready emails — also covers go-live readiness updates and risk escalation comms.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Risk reporting, go-live updates, leadership communications</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Risk Summary">Risk Summary</button>
+        <button class="use-pill" data-usecase="Go-live Readiness">Go-live Readiness</button>
+        <button class="use-pill" data-usecase="Outlook Risk Email">Outlook Risk Email</button>
+        <button class="use-pill" data-usecase="Risk Prioritisation">Risk Prioritisation</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <div class="cta-wrap">
+          <button class="cta-btn cta-btn-jwd jwd-copy-btn" data-phrase="generate a risk update" aria-label="Copy activation phrase for Risk Update Generator">
+            Open in Joule Work Desktop <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <div class="copy-tooltip" aria-hidden="true">Activation phrase copied! Paste it in Joule Work Desktop</div>
+        </div>
+        <a class="cta-btn cta-btn-download" href="https://sap.sharepoint.com/:t:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/Risk%20Update%20Generator.md?d=w22b4448451394947b219551e45f1cff2&csf=1&web=1&e=uXcsab" target="_blank" rel="noopener" aria-label="Download Risk Update Generator skill file">
+          ⬇ Download Skill
+        </a>
+        <p class="jwd-hint">💡 Open Joule Work Desktop and paste the phrase above</p>
+      </div>
+    </article>
+
+    <!-- CARD 9: PMO Assistant -->
+    <article class="tool-card" role="listitem"
+      data-name="PMO Assistant"
+      data-phases="Initiating Planning"
+      data-search="pmo assistant initiation templates intake phase guidance consolidation manual time reduction JWD skill joule work desktop"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🤝</div>
+        <span class="badge badge-jwd" aria-label="Type: JWD Skill">
+          <span class="badge-dot"></span>JWD Skill
+        </span>
+      </div>
+      <h2 class="card-title">PMO Assistant</h2>
+      <p class="card-desc">Accelerates project initiation by pre-filling initiation templates (~75% reduction in manual time) and providing structured phase guidance to consolidate initial calls and intake activities.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Project initiation, template filling, intake management</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Prefill Templates">Prefill Templates</button>
+        <button class="use-pill" data-usecase="Phase Guidance">Phase Guidance</button>
+        <button class="use-pill" data-usecase="Intake Management">Intake Management</button>
+        <button class="use-pill" data-usecase="Initiation Calls">Initiation Calls</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <div class="cta-wrap">
+          <button class="cta-btn cta-btn-jwd jwd-copy-btn" data-phrase="run PMO assistant" aria-label="Copy activation phrase for PMO Assistant">
+            Open in Joule Work Desktop <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <div class="copy-tooltip" aria-hidden="true">Activation phrase copied! Paste it in Joule Work Desktop</div>
+        </div>
+        <a class="cta-btn cta-btn-download" href="https://sap.sharepoint.com/:u:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/GCO%20IPE%26D%20PMO%20Assistant.url?d=wcbf890904e0c4cb39e206f615036b5c5&csf=1&web=1&e=Snqie2" target="_blank" rel="noopener" aria-label="Download PMO Assistant skill file">
+          ⬇ Download Skill
+        </a>
+        <p class="jwd-hint">💡 Open Joule Work Desktop and paste the phrase above</p>
+      </div>
+    </article>
+
+    <!-- CARD 10: SunGrit -->
+    <article class="tool-card" role="listitem"
+      data-name="SunGrit"
+      data-phases="Executing Monitoring"
+      data-search="sungrit weekly status report html pptx personalised follow-up emails action owner daily digest overdue JWD skill joule work desktop"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">☀️</div>
+        <span class="badge badge-jwd" aria-label="Type: JWD Skill">
+          <span class="badge-dot"></span>JWD Skill
+        </span>
+      </div>
+      <h2 class="card-title">SunGrit</h2>
+      <p class="card-desc">Generates visual weekly project status reports (HTML or PPTX), sends personalised follow-up emails to every action owner, and produces a daily PM digest of overdue items — all automatically.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Status reporting, action follow-ups, overdue tracking</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Status Report">Status Report</button>
+        <button class="use-pill" data-usecase="Action Follow-ups">Action Follow-ups</button>
+        <button class="use-pill" data-usecase="Daily Digest">Daily Digest</button>
+        <button class="use-pill" data-usecase="Overdue Tracking">Overdue Tracking</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <div class="cta-wrap">
+          <button class="cta-btn cta-btn-jwd jwd-copy-btn" data-phrase="run SunGrit" aria-label="Copy activation phrase for SunGrit">
+            Open in Joule Work Desktop <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <div class="copy-tooltip" aria-hidden="true">Activation phrase copied! Paste it in Joule Work Desktop</div>
+        </div>
+        <a class="cta-btn cta-btn-download" href="https://sap.sharepoint.com/:t:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/Sungrit%20Skill.md?d=w6225bc308da341dc98d08cd4511772bf&csf=1&web=1&e=yq5lu0" target="_blank" rel="noopener" aria-label="Download SunGrit skill file">
+          ⬇ Download Skill
+        </a>
+        <p class="jwd-hint">💡 Open Joule Work Desktop and paste the phrase above</p>
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════════════════
+         SECTION 3: AUTOMATION & PROCESS TOOLS
+         ══════════════════════════════════════════ -->
+    <div class="section-divider" id="divider-automation" role="separator" aria-label="Section: Automation & Process Tools">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">
+        <span class="section-divider-icon" aria-hidden="true">⚙️</span>
+        Automation &amp; Process Tools
+      </div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <!-- CARD: Signavio -->
+    <article class="tool-card" role="listitem"
+      data-name="Signavio"
+      data-phases="Initiating Planning Executing"
+      data-search="signavio process management modelling diagram flow process excellence standardisation documentation BPM"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🗺️</div>
+        <span class="badge badge-sap" aria-label="Type: SAP AI">
+          <span class="badge-dot"></span>SAP AI
+        </span>
+      </div>
+      <h2 class="card-title">Signavio</h2>
+      <p class="card-desc">Process management and modelling tool for building and documenting process diagrams and flows. In the PMO it supports process excellence and standardisation — particularly useful for mapping and improving project workflows.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Process diagrams, workflow documentation, process standardisation</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Process Diagrams">Process Diagrams</button>
+        <button class="use-pill" data-usecase="Workflow Mapping">Workflow Mapping</button>
+        <button class="use-pill" data-usecase="Process Excellence">Process Excellence</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <button class="cta-btn" aria-label="Learn more about Signavio">
+          Learn more <span class="cta-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- CARD: SharePoint -->
+    <article class="tool-card" role="listitem"
+      data-name="SharePoint"
+      data-phases="Initiating Planning Executing Monitoring Closing"
+      data-search="sharepoint repository documents templates guidance knowledge base project documentation PMO storage AI knowledge"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">📂</div>
+        <span class="badge badge-m365" aria-label="Type: Microsoft 365">
+          <span class="badge-dot"></span>M365
+        </span>
+      </div>
+      <h2 class="card-title">SharePoint</h2>
+      <p class="card-desc">Central PMO repository for project documents, templates, guidance and knowledge. In the broader AI workflow, SharePoint also provides the content base for scoped knowledge experiences where users can ask questions against project documentation.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Document storage, templates, AI-searchable knowledge base</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Document Storage">Document Storage</button>
+        <button class="use-pill" data-usecase="Templates">Templates</button>
+        <button class="use-pill" data-usecase="Knowledge Base">Knowledge Base</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://sap.sharepoint.com/teams/GCIDPMO" target="_blank" rel="noopener">
+          Open SharePoint <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD: Jira Automation Tool -->
+    <article class="tool-card" role="listitem"
+      data-name="Jira Automation Tool"
+      data-phases="Planning Executing Monitoring"
+      data-tags="Jira"
+      data-search="jira automation rules recurring ticket creation automatic task workflow risk scoring calculations efficiency PMO"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">⚡</div>
+        <span class="badge badge-ent" aria-label="Type: Enterprise Access">
+          <span class="badge-dot"></span>Enterprise Access
+        </span>
+      </div>
+      <h2 class="card-title">Jira Automation Tool</h2>
+      <p class="card-desc">Rule-based Jira automation for recurring ticket creation, automatic task handling, workflow rules and calculations such as risk scoring. Supports PMO efficiency — note: this is automation, not AI.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Recurring tickets, workflow rules, risk score calculations</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Recurring Tickets">Recurring Tickets</button>
+        <button class="use-pill" data-usecase="Workflow Rules">Workflow Rules</button>
+        <button class="use-pill" data-usecase="Risk Scoring">Risk Scoring</button>
+        <button class="use-pill" data-usecase="Auto Task Handling">Auto Task Handling</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <button class="cta-btn" aria-label="Learn more about Jira Automation Tool">
+          Learn more <span class="cta-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════════════════
+         SECTION 4: TRAININGS & TUTORIALS
+         ══════════════════════════════════════════ -->
+    <div class="section-divider" id="divider-training" role="separator" aria-label="Section: Trainings & Tutorials">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">
+        <span class="section-divider-icon" aria-hidden="true">🎓</span>
+        Trainings &amp; Tutorials
+      </div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <!-- CARD T1: How to Set Up Joule Skills -->
+    <article class="tool-card" role="listitem"
+      data-name="How to Set Up Joule Skills"
+      data-phases="Initiating Planning Executing Monitoring Closing"
+      data-search="how to set up joule skills tutorial guide pptx presentation onboarding setup install joule work desktop training"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">📖</div>
+        <span class="badge badge-training" aria-label="Type: Training">
+          <span class="badge-dot"></span>Tutorial
+        </span>
+      </div>
+      <h2 class="card-title">How to Set Up Joule Skills</h2>
+      <p class="card-desc">Step-by-step PowerPoint guide on how to install and configure Joule Work Desktop skills — covers initial setup, skill activation, and troubleshooting for the GCID PMO team.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Onboarding, first-time Joule setup, skill installation</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Joule Setup">Joule Setup</button>
+        <button class="use-pill" data-usecase="Skill Installation">Skill Installation</button>
+        <button class="use-pill" data-usecase="Onboarding">Onboarding</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://sap.sharepoint.com/:p:/r/teams/GCIDPMO/Shared%20Documents/General/2%20AI%20Resources/Joule%20Skills/How-To%20Set-Up%20Joule%20Skills.pptx?d=w7c6e9ada339041ddbad620bfc35f348c&csf=1&web=1&e=xxqsy2" target="_blank" rel="noopener" aria-label="Open How to Set Up Joule Skills presentation">
+          Open Tutorial <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD T2: GitHub & Jira Integration -->
+    <article class="tool-card" role="listitem"
+      data-name="GitHub & Jira Integration"
+      data-phases="Planning Executing Monitoring"
+      data-tags="Jira"
+      data-search="github jira integration tutorial guide pptx presentation setup connect repository tickets training"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🔀</div>
+        <span class="badge badge-training" aria-label="Type: Training">
+          <span class="badge-dot"></span>Tutorial
+        </span>
+      </div>
+      <h2 class="card-title">GitHub &amp; Jira Integration</h2>
+      <p class="card-desc">Step-by-step PowerPoint guide on connecting GitHub repositories to Jira — covers setup, linking commits and PRs to tickets, and keeping project tracking in sync across both tools.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>GitHub setup, Jira integration, dev-PM workflow</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="GitHub Setup">GitHub Setup</button>
+        <button class="use-pill" data-usecase="Jira Integration">Jira Integration</button>
+        <button class="use-pill" data-usecase="Repo Linking">Repo Linking</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://sap.sharepoint.com/:p:/r/teams/GCIDPMO/_layouts/15/Doc.aspx?sourcedoc=%7B6FB6ADE9-A01C-4935-9A1A-B34F4BE81F75%7D&file=GitHub%20&%20Jira%20Integration.pptx=&action=edit&mobileredirect=true" target="_blank" rel="noopener" aria-label="Open GitHub & Jira Integration tutorial">
+          Open Tutorial <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD T3: AI-Powered Project Execution & Governance Recording -->
+    <article class="tool-card" role="listitem"
+      data-name="AI-Powered Project Execution & Governance"
+      data-phases="Initiating Planning Executing Monitoring Closing"
+      data-search="ai powered project execution governance recording webinar session use case meeting video training tutorial"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🎬</div>
+        <span class="badge badge-training" aria-label="Type: Training">
+          <span class="badge-dot"></span>Recording
+        </span>
+      </div>
+      <h2 class="card-title">AI-Powered Project Execution &amp; Governance</h2>
+      <p class="card-timestamp"><i class="card-timestamp-icon">🗓</i> 15 Sep 2026</p>
+      <p class="card-desc">Covering AI use cases in project execution and governance — practical examples of how AI tools are being applied across the GCID PMO to improve delivery and oversight.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Learning AI use cases, project governance, onboarding</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="AI Use Cases">AI Use Cases</button>
+        <button class="use-pill" data-usecase="Project Governance">Project Governance</button>
+        <button class="use-pill" data-usecase="Onboarding">Onboarding</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+        <span class="phase-tag phase-closing">Closing</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://sap.sharepoint.com/teams/GCIDPMO/_layouts/15/stream.aspx?id=%2Fteams%2FGCIDPMO%2FShared%20Documents%2FGeneral%2F2%20AI%20Resources%2FAI%20Use%20Cases%20Recordings%2FAI%20Use%20Case%20%2D%20AI%2DPowered%20Project%20Execution%20%5F%20Governance%2D20260915%5F092707%2DMeeting%20Recording%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2Eb6f06608%2D00e1%2D45a4%2D903c%2Dd5bed8a00f51" target="_blank" rel="noopener" aria-label="Watch AI-Powered Project Execution & Governance recording">
+          ▶ Watch Recording <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- CARD T4: AI-Powered Risk Management Recording -->
+    <article class="tool-card" role="listitem"
+      data-name="AI-Powered Risk Management"
+      data-phases="Monitoring"
+      data-tags="jira"
+      data-search="ai powered risk management recording jira monitoring controlling risk register executive reporting mitigation dashboard project manager pmo training tutorial"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🎬</div>
+        <span class="badge badge-training" aria-label="Type: Training">
+          <span class="badge-dot"></span>Recording
+        </span>
+      </div>
+      <h2 class="card-title">AI-Powered Risk Management</h2>
+      <p class="card-timestamp"><i class="card-timestamp-icon">🗓</i> 18 Sep 2026</p>
+      <p class="card-desc">How AI reduces risk administration from 2–3 hours per review cycle to 5–15 minutes — covering risk extraction from transcripts, Jira ticket creation, risk register updates, executive summaries, and self-service dashboards.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Project Managers, PMO, Delivery Leads — anyone tracking risks and producing executive reports</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Risk Management">Risk Management</button>
+        <button class="use-pill" data-usecase="Jira Automation">Jira Automation</button>
+        <button class="use-pill" data-usecase="Executive Reporting">Executive Reporting</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://sap.sharepoint.com/teams/GCIDPMO/_layouts/15/stream.aspx?id=%2Fteams%2FGCIDPMO%2FShared%20Documents%2FGeneral%2F2%20AI%20Resources%2FAI%20Use%20Cases%20Recordings%2FAI%2DPowered%20Risk%20Management%2D20260918%5F110834%2DMeeting%20Recording%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E2d30d9e7%2D1450%2D4d56%2D87eb%2D58314567ee7b" target="_blank" rel="noopener" aria-label="Watch AI-Powered Risk Management recording">
+          ▶ Watch Recording <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════════════════
+         SECTION 5: IN DEVELOPMENT
+         ══════════════════════════════════════════ -->
+    <div class="section-divider" id="divider-indev" role="separator" aria-label="Section: In Development">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">
+        <span class="section-divider-icon" aria-hidden="true">🔬</span>
+        In Development
+      </div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <!-- CARD: AI Incubation Supported Features -->
+    <article class="tool-card" role="listitem"
+      data-name="AI Incubation Supported Features"
+      data-phases="Initiating Planning Executing Monitoring"
+      data-search="AI incubation new features development migration metadata stakeholder identification experimental capability PMO"
+    >
+      <div class="card-header">
+        <div class="card-icon-wrap" aria-hidden="true">🧪</div>
+        <span class="badge badge-exploring" aria-label="Status: Exploring">
+          <span class="badge-dot"></span>Exploring
+        </span>
+      </div>
+      <h2 class="card-title">AI Incubation Supported Features</h2>
+      <p class="card-desc">A category for new AI-enabled PMO capabilities currently under development. Examples include automatically consolidating migration metadata and AI-supported stakeholder identification — not one tool, but a pipeline of emerging capabilities.</p>
+      <div class="card-bestfor">
+        <span class="card-bestfor-label">Best for</span>
+        <span>Emerging use cases, migration metadata, stakeholder mapping</span>
+      </div>
+      <div class="card-usecases" aria-label="Use cases">
+        <button class="use-pill" data-usecase="Migration Metadata">Migration Metadata</button>
+        <button class="use-pill" data-usecase="Stakeholder Identification">Stakeholder Identification</button>
+        <button class="use-pill" data-usecase="Emerging AI">Emerging AI</button>
+      </div>
+      <div class="card-phases" aria-label="Project phases">
+        <span class="phase-tag phase-initiating">Initiating</span>
+        <span class="phase-tag phase-planning">Planning</span>
+        <span class="phase-tag phase-executing">Executing</span>
+        <span class="phase-tag phase-monitoring">Monitoring</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        <a class="cta-btn" href="https://jira.tools.sap/browse/AIPMO" target="_blank" rel="noopener">
+          View AIPMO Backlog <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <!-- ── EMPTY STATE ── -->
+    <div class="empty-state" id="empty-state" role="status" aria-live="polite">
+      <div class="empty-icon" aria-hidden="true">🔍</div>
+      <div class="empty-title">No tools match "<span id="no-results-query"></span>"</div>
+      <p class="empty-sub">Try a different keyword, or clear all filters to see every tool.</p>
+    </div>
+
+  </div><!-- /.cards-grid -->
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer" role="contentinfo">
+  <div>
+    Built by GCO GCID PMO — AI Programme Management Office &nbsp;·&nbsp; Snapshot: 29 Sep 2026
+  </div>
+  <div class="footer-links">
+    <a href="https://jira.tools.sap/browse/AIPMO" target="_blank" rel="noopener">AIPMO Jira Project</a>
+    <span class="footer-divider" aria-hidden="true"></span>
+    <a href="https://jira.tools.sap/secure/StructureBoard.jspa?s=33344#" target="_blank" rel="noopener">Structure Board 33344</a>
+    <span class="footer-divider" aria-hidden="true"></span>
+    <a href="https://jira.tools.sap/browse/AIPMO-50" target="_blank" rel="noopener">AIPMO-50: One Pager Epic</a>
+    <span class="footer-divider" aria-hidden="true"></span>
+    <a href="mailto:aleksandra.barlatova@sap.com">Contact PMO AI Lead</a>
+  </div>
+</footer>
+
+<!-- ── JWD SKILL DETAIL PANEL ── -->
+<div class="panel-overlay" id="panel-overlay" aria-hidden="true"></div>
+
+<aside
+  class="skill-panel"
+  id="skill-panel"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="panel-title-text"
+  aria-hidden="true"
+>
+  <div class="panel-header">
+    <button class="panel-close" id="panel-close" aria-label="Close panel">✕</button>
+    <span class="panel-icon" id="panel-icon" aria-hidden="true"></span>
+    <h2 class="panel-title" id="panel-title-text"></h2>
+    <span class="panel-badge">⚡ JWD Skill</span>
+  </div>
+
+  <div class="panel-body">
+    <!-- Description -->
+    <section aria-label="Description">
+      <div class="panel-section-label">About this skill</div>
+      <p class="panel-desc" id="panel-desc"></p>
+    </section>
+
+    <div class="panel-sep"></div>
+
+    <!-- How to use -->
+    <section aria-label="How to use">
+      <div class="panel-section-label">How to use</div>
+      <ol class="panel-steps" aria-label="Steps">
+        <li class="panel-step">
+          <span class="step-num" aria-hidden="true">1</span>
+          <span class="step-text">Open <strong>Joule Work Desktop</strong></span>
+        </li>
+        <li class="panel-step">
+          <span class="step-num" aria-hidden="true">2</span>
+          <span class="step-text">Start a <strong>new conversation</strong></span>
+        </li>
+        <li class="panel-step">
+          <span class="step-num" aria-hidden="true">3</span>
+          <span class="step-text">
+            Type the activation phrase:
+            <div class="phrase-box" role="region" aria-label="Activation phrase">
+              <span class="phrase-text" id="panel-phrase"></span>
+            </div>
+          </span>
+        </li>
+        <li class="panel-step">
+          <span class="step-num" aria-hidden="true">4</span>
+          <span class="step-text">Follow the prompts Joule gives you</span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Copy button -->
+    <button class="panel-copy-btn" id="panel-copy-btn" aria-label="Copy activation phrase to clipboard">
+      <span class="btn-icon" aria-hidden="true">📋</span>
+      <span id="panel-copy-label">Copy activation phrase</span>
+    </button>
+
+    <div class="panel-sep"></div>
+
+    <!-- Use cases -->
+    <section aria-label="Use cases">
+      <div class="panel-section-label">Use cases</div>
+      <ul class="panel-usecases" id="panel-usecases"></ul>
+    </section>
+  </div>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ══════════════════════════════════════
+     JWD SKILL DATA
+     ══════════════════════════════════════ */
+  const JWD_DATA = {
+    'Joule + Jira MCP': {
+      icon: '🔗',
+      phrase: 'connect Joule to Jira',
+      desc: 'Joule connected to live Jira data via MCP — generate timeline and Gantt roadmaps on-the-fly, and write meeting transcripts back to Jira tickets automatically without any manual copy-paste.',
+      usecases: [
+        'Generate a timeline or Gantt roadmap directly from live Jira data',
+        'Update Jira tickets after a meeting using the transcript',
+        'Auto-write meeting actions back to the relevant Jira issues',
+        'Query live project data from Jira without leaving your conversation',
+        'Create a visual project roadmap from the current sprint or backlog',
+      ],
+    },
+    'SAP Minutes': {
+      icon: '📝',
+      phrase: 'generate SAP minutes',
+      desc: 'Converts meeting transcripts into structured SAP Minutes — actions, decisions, risks, and updates — and pre-fills Jira links automatically. Also flags risks hidden in the transcript.',
+      usecases: [
+        'Convert a meeting transcript into formatted SAP Minutes',
+        'Identify and flag risks from the transcript',
+        'Extract actions with owners and due dates',
+        'Pre-fill Jira ticket links into meeting notes',
+        'Capture decisions made during the meeting',
+      ],
+    },
+    'Jira TickMatic': {
+      icon: '🎫',
+      phrase: 'create Jira tickets',
+      desc: 'Bulk-creates Jira tickets from structured input or Excel, converts meeting actions into tickets, sets up sprints with auto-assignment, links dependencies, and updates existing tickets in one go.',
+      usecases: [
+        'Bulk-create Jira tickets from a structured list or Excel',
+        'Convert meeting actions / transcript into Jira tickets',
+        'Create a sprint and auto-assign tickets to team members',
+        'Link ticket dependencies automatically',
+        'Update existing Jira tickets (assignee, status, due date, labels)',
+        'Generate an initial Jira backlog from an AI project plan',
+      ],
+    },
+    'Project Manager Skill': {
+      icon: '🗂️',
+      phrase: 'run project manager skill',
+      desc: 'End-to-end PM support — generates playbooks, risk registers, project charters from kickoff transcripts, SteerCo updates, closure comms, WBS, and RAID log analysis across all project phases.',
+      usecases: [
+        'Generate a PM playbook including risk register, timeline and contact matrix',
+        'Turn a kickoff transcript into a project charter',
+        'Draft an Executive Summary or SteerCo update',
+        'Write project closure communications',
+        'Build a project plan with milestones and dependencies',
+        'Create a work breakdown structure (WBS)',
+        'Identify risks from transcripts and analyse the RAID log',
+      ],
+    },
+    'Risk Update Generator': {
+      icon: '⚠️',
+      phrase: 'generate a risk update',
+      desc: 'Produces leadership-ready risk summaries with prioritisation and owners, formatted as Outlook-ready emails — also covers go-live readiness updates and risk escalation comms.',
+      usecases: [
+        'Create a leadership-ready risk summary with prioritisation and owners',
+        'Format the risk update as an Outlook-ready email',
+        'Generate a go-live readiness / risk update',
+        'Prioritise risks by likelihood and impact',
+        'Assign risk owners and recommended mitigations',
+      ],
+    },
+    'PMO Assistant': {
+      icon: '🤝',
+      phrase: 'run PMO assistant',
+      desc: 'Accelerates project initiation by pre-filling initiation templates (~75% reduction in manual time) and providing structured phase guidance to consolidate initial calls and intake activities.',
+      usecases: [
+        'Pre-fill initiation templates (~75% reduction in manual effort)',
+        'Provide structured guidance for the current project phase',
+        'Consolidate initial calls and intake information',
+        'Guide you through project intake management',
+        'Suggest next steps based on project phase',
+      ],
+    },
+    'SunGrit': {
+      icon: '☀️',
+      phrase: 'run SunGrit',
+      desc: 'Generates visual weekly project status reports (HTML or PPTX), sends personalised follow-up emails to every action owner, and produces a daily PM digest of overdue items — all automatically.',
+      usecases: [
+        'Generate a visual weekly project status report (HTML or PPTX)',
+        'Send personalised follow-up emails to every action owner',
+        'Produce a daily PM digest of overdue items',
+        'Track action completion rates across the team',
+        'Summarise project health for stakeholder distribution',
+      ],
+    },
+  };
+
+  /* ══════════════════════════════════════
+     PANEL LOGIC
+     ══════════════════════════════════════ */
+  const overlay    = document.getElementById('panel-overlay');
+  const panel      = document.getElementById('skill-panel');
+  const panelClose = document.getElementById('panel-close');
+  const panelIcon  = document.getElementById('panel-icon');
+  const panelTitle = document.getElementById('panel-title-text');
+  const panelDesc  = document.getElementById('panel-desc');
+  const panelPhrase     = document.getElementById('panel-phrase');
+  const panelCopyBtn    = document.getElementById('panel-copy-btn');
+  const panelCopyLabel  = document.getElementById('panel-copy-label');
+  const panelUsecases   = document.getElementById('panel-usecases');
+  let copyTimer = null;
+
+  function openPanel(skillName) {
+    const data = JWD_DATA[skillName];
+    if (!data) return;
+
+    panelIcon.textContent  = data.icon;
+    panelTitle.textContent = skillName;
+    panelDesc.textContent  = data.desc;
+    panelPhrase.textContent = data.phrase;
+
+    panelUsecases.innerHTML = '';
+    data.usecases.forEach(uc => {
+      const li = document.createElement('li');
+      li.textContent = uc;
+      panelUsecases.appendChild(li);
+    });
+
+    // Reset copy button state
+    clearTimeout(copyTimer);
+    panelCopyLabel.textContent = 'Copy activation phrase';
+    panelCopyBtn.classList.remove('copied');
+    panelCopyBtn.querySelector('.btn-icon').textContent = '📋';
+
+    overlay.classList.add('open');
+    panel.classList.add('open');
+    overlay.removeAttribute('aria-hidden');
+    panel.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    // Focus the close button for keyboard users
+    requestAnimationFrame(() => panelClose.focus());
+  }
+
+  function closePanel() {
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    panel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  panelClose.addEventListener('click', closePanel);
+  overlay.addEventListener('click', closePanel);
+
+  // Escape key closes panel
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && panel.classList.contains('open')) closePanel();
+  });
+
+  // Panel copy button
+  panelCopyBtn.addEventListener('click', function () {
+    const phrase = panelPhrase.textContent;
+    const doConfirm = () => {
+      clearTimeout(copyTimer);
+      panelCopyLabel.textContent = 'Copied!';
+      panelCopyBtn.querySelector('.btn-icon').textContent = '✅';
+      panelCopyBtn.classList.add('copied');
+      copyTimer = setTimeout(() => {
+        panelCopyLabel.textContent = 'Copy activation phrase';
+        panelCopyBtn.querySelector('.btn-icon').textContent = '📋';
+        panelCopyBtn.classList.remove('copied');
+      }, 2200);
+    };
+    navigator.clipboard.writeText(phrase).then(doConfirm).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = phrase;
+      ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      doConfirm();
+    });
+  });
+
+  /* ══════════════════════════════════════
+     WIRE UP JWD CARDS — click opens panel
+     ══════════════════════════════════════ */
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const name = card.dataset.name;
+    if (!JWD_DATA[name]) return;
+
+    // Mark card as clickable
+    card.classList.add('jwd-card');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Open ${name} skill details`);
+
+    const openThisPanel = (e) => {
+      // Don't double-fire when the jwd-copy-btn inside is clicked
+      if (e.target.closest('.jwd-copy-btn')) return;
+      openPanel(name);
+    };
+
+    card.addEventListener('click', openThisPanel);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPanel(name); }
+    });
+  });
+
+  /* ══════════════════════════════════════
+     SEARCH + FILTER
+     ══════════════════════════════════════ */
+  const cards      = Array.from(document.querySelectorAll('.tool-card'));
+  const dividers   = Array.from(document.querySelectorAll('.section-divider'));
+  const searchInput = document.getElementById('search-input');
+  const searchClear = document.getElementById('search-clear');
+  const emptyState  = document.getElementById('empty-state');
+  const noResultsQ  = document.getElementById('no-results-query');
+  const resultsNum  = document.getElementById('results-num');
+  const filterBtns  = Array.from(document.querySelectorAll('.filter-btn[data-phase]'));
+  const topicBtns   = Array.from(document.querySelectorAll('.topic-btn'));
+
+  let currentQuery  = '';
+  let currentPhase  = 'all';
+  let currentTopic  = '';
+
+  function applyFilters() {
+    const q = currentQuery.toLowerCase().trim();
+    let visible = 0;
+
+    cards.forEach(card => {
+      const nameAttr   = card.dataset.name.toLowerCase();
+      const searchAttr = card.dataset.search.toLowerCase();
+      const phasesAttr = card.dataset.phases;
+      const tagsAttr   = card.dataset.tags || '';
+
+      const matchesQuery = !q || nameAttr.includes(q) || searchAttr.includes(q);
+      const matchesPhase = currentPhase === 'all' || phasesAttr.includes(currentPhase);
+      const matchesTopic = !currentTopic || tagsAttr.includes(currentTopic);
+
+      if (matchesQuery && matchesPhase && matchesTopic) {
+        card.classList.remove('hidden');
+        visible++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    dividers.forEach(div => {
+      let el = div.nextElementSibling;
+      let sectionVisible = false;
+      while (el && !el.classList.contains('section-divider') && !el.classList.contains('empty-state')) {
+        if (el.classList.contains('tool-card') && !el.classList.contains('hidden')) {
+          sectionVisible = true;
+          break;
+        }
+        el = el.nextElementSibling;
+      }
+      div.classList.toggle('hidden', !sectionVisible);
+    });
+
+    resultsNum.textContent = visible;
+
+    if (visible === 0) {
+      emptyState.classList.add('visible');
+      noResultsQ.textContent = q || currentTopic || currentPhase;
+    } else {
+      emptyState.classList.remove('visible');
+    }
+  }
+
+  searchInput.addEventListener('input', function () {
+    currentQuery = this.value;
+    searchClear.classList.toggle('visible', currentQuery.length > 0);
+    applyFilters();
+  });
+
+  searchClear.addEventListener('click', function () {
+    searchInput.value = '';
+    currentQuery = '';
+    searchClear.classList.remove('visible');
+    searchInput.focus();
+    applyFilters();
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentPhase = this.dataset.phase;
+      applyFilters();
+    });
+  });
+
+  topicBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      const topic = this.dataset.topic;
+      if (currentTopic === topic) {
+        // toggle off
+        currentTopic = '';
+        this.classList.remove('active');
+      } else {
+        topicBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentTopic = topic;
+      }
+      applyFilters();
+    });
+  });
+
+  document.querySelectorAll('.use-pill').forEach(pill => {
+    pill.addEventListener('click', function (e) {
+      e.stopPropagation(); // prevent bubbling to jwd-card click
+      const term = this.dataset.usecase;
+      searchInput.value = term;
+      currentQuery = term.toLowerCase();
+      searchClear.classList.add('visible');
+      filterBtns.forEach(b => b.classList.remove('active'));
+      topicBtns.forEach(b => b.classList.remove('active'));
+      filterBtns.find(b => b.dataset.phase === 'all').classList.add('active');
+      currentPhase = 'all';
+      currentTopic = '';
+      applyFilters();
+      searchInput.focus();
+      document.getElementById('main-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  /* ── JWD card-level copy buttons (stop propagation so panel doesn't open) ── */
+  document.querySelectorAll('.jwd-copy-btn').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const phrase  = this.dataset.phrase;
+      const tooltip = this.nextElementSibling;
+      const doShow = () => {
+        tooltip.classList.add('show');
+        setTimeout(() => tooltip.classList.remove('show'), 2400);
+      };
+      navigator.clipboard.writeText(phrase).then(doShow).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = phrase;
+        ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        doShow();
+      });
+    });
+  });
+
+  applyFilters();
+})();
+</script>
+</body>
+</html>
